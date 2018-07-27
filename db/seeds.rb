@@ -38,8 +38,8 @@ end
   )
 end
 
-# create 40 comments, either on existing comments or gossips aka commentables
-40.times do
+# create an array with all the commentables and returns a random one
+def random_commentable()
   commentables = []
   Gossip.all.each do |gossip|
     commentables.push(gossip)
@@ -47,29 +47,27 @@ end
   Comment.all.each do |comment|
     commentables.push(comment)
   end
-  commentable = commentables.sample
+  commentables.sample
+end
+
+# create 40 comments, either on existing comments or gossips aka commentables
+40.times do
+  commentable = random_commentable()
   Comment.create(
     user_id: User.all.sample.id,
     content: Faker::GameOfThrones.quote,
     commentable_id: commentable.id,
-    commentable_type: (commentable.is_a? Gossip) ? "Gossip" : "Comment"
+    commentable_type: commentable.class.to_s
   )
 end
 
 # create 50 likes either on comments or gossips aka commentables
 50.times do
-  commentables = []
-  Gossip.all.each do |gossip|
-    commentables.push(gossip)
-  end
-  Comment.all.each do |comment|
-    commentables.push(comment)
-  end
-  commentable = commentables.sample
+  commentable = random_commentable()
   Like.create(
     user_id: User.all.sample.id,
     commentable_id: commentable.id,
-    commentable_type: (commentable.is_a? Gossip) ? "Gossip" : "Comment"
+    commentable_type: commentable.class.to_s
   )
 end
 
